@@ -388,9 +388,10 @@ namespace ManagedCodeGen
 
                 if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
-                    // Disable fragile relocs on non-Windows platforms, see
-                    // https://github.com/dotnet/runtime/issues/87842
-                    AddEnvironmentVariable("DOTNET_JitEnableOptionalRelocs", "0");
+                    // Exercise optional page-relative relocations in native Arm64 PMI runs.
+                    // Other non-Windows runs keep the workaround for dotnet/runtime#87842.
+                    AddEnvironmentVariable("DOTNET_JitEnableOptionalRelocs",
+                        RuntimeInformation.ProcessArchitecture == Architecture.Arm64 ? "1" : "0");
                 }
 
                 // Set up PMI path...
